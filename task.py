@@ -73,8 +73,8 @@ def zip_recipt():
 
 if __name__ == "__main__":
     open_browser()
-#     dynamic_form_filling()
-#     zip_recipt()
+    dynamic_form_filling()
+    zip_recipt()
 
 
 
