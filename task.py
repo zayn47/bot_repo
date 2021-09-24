@@ -2,10 +2,14 @@
 from RPA.Browser.Selenium import Selenium
 from RPA.Excel.Files import Files
 from RPA.PDF import PDF
-from time import sleep
 from RPA.Dialogs import Dialogs
 from RPA.Archive import Archive
 from RPA.Robocorp.Vault import Vault
+from RPA.FileSystem import FileSystem
+from RPA.Tables import Tables
+
+from time import sleep
+
 
 _secret = Vault().get_secret("credentials")
 browser = Selenium()
@@ -13,6 +17,8 @@ excel = Files()
 pdf = PDF()
 dialogs = Dialogs()
 archive = Archive()
+filesystem = FileSystem()
+table = Tables()
 
 
 # +
@@ -32,8 +38,13 @@ def open_browser():
 def dynamic_form_filling():
     dialogs.add_file_input(name="orders")
     user = dialogs.run_dialog()
-    excel.open_workbook(path=user.orders[0])
-    order_data = excel.read_worksheet(header=True)
+
+    if filesystem.get_file_extension(path=user.orders[0]) == '.csv':
+        data = table.read_table_from_csv(user.orders[0], header=True)
+        order_data = table.export_table(data)
+    else:
+        excel.open_workbook(path=user.orders[0])
+        order_data = excel.read_worksheet(header=True)
 
     for item in order_data:
 
